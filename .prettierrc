@@ -1,0 +1,14 @@
+{
+  "singleQuote": true,
+  "trailingComma": "all",
+  "importOrder": [
+    "^@nestjs/(.*)$",
+    "^@libs/(.*)$",
+    "^@modules/(.*)$",
+    "^@shared/(.*)$",
+    "^@utils/(.*)$",
+    "^[./]"
+  ],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true
+}
