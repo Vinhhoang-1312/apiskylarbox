@@ -1,117 +1,143 @@
-import { IsString, IsNumber, IsOptional, IsBoolean, IsArray } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsBoolean, IsOptional, IsNotEmpty, IsArray, IsNumber, IsDateString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 
 export class CreateBlogDto {
-    @ApiProperty({ description: 'Tiêu đề bài viết' })
+    @ApiProperty({ description: 'Blog title' })
     @IsString()
+    @IsNotEmpty()
     title: string;
 
-    @ApiProperty({ description: 'Tóm tắt' })
+    @ApiProperty({ description: 'Blog excerpt' })
     @IsString()
+    @IsNotEmpty()
     excerpt: string;
 
-    @ApiProperty({ description: 'Ngày đăng' })
+    @ApiProperty({ description: 'Blog content' })
     @IsString()
-    date: string;
+    @IsNotEmpty()
+    content: string;
 
-    @ApiProperty({ description: 'Nội dung' })
-    @IsOptional()
+    @ApiPropertyOptional({ description: 'URL slug' })
     @IsString()
-    content?: string;
+    @IsOptional()
+    slug?: string;
 
-    @ApiProperty({ description: 'Tác giả' })
-    @IsOptional()
+    @ApiPropertyOptional({ description: 'Author name' })
     @IsString()
+    @IsOptional()
     author?: string;
 
-    @ApiProperty({ description: 'Hình ảnh' })
-    @IsOptional()
+    @ApiPropertyOptional({ description: 'Featured image URL' })
     @IsString()
-    image?: string;
-
-    @ApiProperty({ description: 'Tags', type: [String] })
     @IsOptional()
+    featuredImage?: string;
+
+    @ApiPropertyOptional({ description: 'Tags', type: [String] })
     @IsArray()
     @IsString({ each: true })
+    @IsOptional()
     tags?: string[];
 
-    @ApiProperty({ description: 'Thứ tự sắp xếp' })
+    @ApiPropertyOptional({ description: 'Category' })
+    @IsString()
     @IsOptional()
-    @IsNumber()
-    sort_order?: number;
+    category?: string;
 
-    @ApiProperty({ description: 'Trạng thái hoạt động' })
+    @ApiPropertyOptional({ description: 'Published date' })
+    @IsDateString()
     @IsOptional()
+    publishedDate?: Date;
+
+    @ApiPropertyOptional({ description: 'Is published', default: true })
     @IsBoolean()
-    is_active?: boolean;
-}
-
-export class UpdateBlogDto {
-    @ApiProperty({ description: 'Tiêu đề bài viết' })
     @IsOptional()
+    isPublished?: boolean;
+
+    @ApiPropertyOptional({ description: 'Is featured', default: false })
+    @IsBoolean()
+    @IsOptional()
+    isFeatured?: boolean;
+
+    @ApiPropertyOptional({ description: 'Meta title for SEO' })
     @IsString()
-    title?: string;
-
-    @ApiProperty({ description: 'Tóm tắt' })
     @IsOptional()
+    metaTitle?: string;
+
+    @ApiPropertyOptional({ description: 'Meta description for SEO' })
     @IsString()
-    excerpt?: string;
-
-    @ApiProperty({ description: 'Ngày đăng' })
     @IsOptional()
-    @IsString()
-    date?: string;
+    metaDescription?: string;
 
-    @ApiProperty({ description: 'Nội dung' })
-    @IsOptional()
-    @IsString()
-    content?: string;
-
-    @ApiProperty({ description: 'Tác giả' })
-    @IsOptional()
-    @IsString()
-    author?: string;
-
-    @ApiProperty({ description: 'Hình ảnh' })
-    @IsOptional()
-    @IsString()
-    image?: string;
-
-    @ApiProperty({ description: 'Tags', type: [String] })
-    @IsOptional()
+    @ApiPropertyOptional({ description: 'Meta keywords for SEO', type: [String] })
     @IsArray()
     @IsString({ each: true })
-    tags?: string[];
-
-    @ApiProperty({ description: 'Thứ tự sắp xếp' })
     @IsOptional()
-    @IsNumber()
-    sort_order?: number;
-
-    @ApiProperty({ description: 'Trạng thái hoạt động' })
-    @IsOptional()
-    @IsBoolean()
-    is_active?: boolean;
+    metaKeywords?: string[];
 }
 
-export class QueryBlogDto {
-    @ApiProperty({ description: 'Trang', required: false })
-    @IsOptional()
+export class UpdateBlogDto extends PartialType(CreateBlogDto) {
+    @ApiPropertyOptional({ description: 'View count' })
     @IsNumber()
+    @IsOptional()
+    @Type(() => Number)
+    viewCount?: number;
+
+    @ApiPropertyOptional({ description: 'Like count' })
+    @IsNumber()
+    @IsOptional()
+    @Type(() => Number)
+    likeCount?: number;
+}
+
+export class FilterBlogDto {
+    @ApiPropertyOptional({ description: 'Page number', default: 1 })
+    @IsNumber()
+    @IsOptional()
+    @Type(() => Number)
     page?: number = 1;
 
-    @ApiProperty({ description: 'Số lượng mỗi trang', required: false })
-    @IsOptional()
+    @ApiPropertyOptional({ description: 'Items per page', default: 10 })
     @IsNumber()
+    @IsOptional()
+    @Type(() => Number)
     limit?: number = 10;
 
-    @ApiProperty({ description: 'Tìm kiếm theo tiêu đề', required: false })
-    @IsOptional()
+    @ApiPropertyOptional({ description: 'Search by title or content' })
     @IsString()
+    @IsOptional()
     search?: string;
 
-    @ApiProperty({ description: 'Lọc theo tác giả', required: false })
-    @IsOptional()
+    @ApiPropertyOptional({ description: 'Filter by category' })
     @IsString()
+    @IsOptional()
+    category?: string;
+
+    @ApiPropertyOptional({ description: 'Filter by author' })
+    @IsString()
+    @IsOptional()
     author?: string;
+
+    @ApiPropertyOptional({ description: 'Filter by tags', type: [String] })
+    @IsArray()
+    @IsString({ each: true })
+    @IsOptional()
+    tags?: string[];
+
+    @ApiPropertyOptional({ description: 'Filter by published status' })
+    @IsBoolean()
+    @IsOptional()
+    @Type(() => Boolean)
+    isPublished?: boolean;
+
+    @ApiPropertyOptional({ description: 'Filter by featured status' })
+    @IsBoolean()
+    @IsOptional()
+    @Type(() => Boolean)
+    isFeatured?: boolean;
+
+    @ApiPropertyOptional({ description: 'Sort field', default: '-publishedDate' })
+    @IsString()
+    @IsOptional()
+    sort?: string = '-publishedDate';
 }

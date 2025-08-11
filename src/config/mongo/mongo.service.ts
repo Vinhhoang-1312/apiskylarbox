@@ -9,7 +9,7 @@ import { AppLogger } from '@shared/logger/logger.service';
 export class MongoConfigService {
   private readonly logger = new AppLogger(this.constructor.name);
 
-  constructor(private readonly config: ConfigService) {}
+  constructor(private readonly config: ConfigService) { }
 
   getMongoURI(): string {
     return this.config.get<string>('dbConfig.mongo.host');
@@ -23,21 +23,9 @@ export class MongoConfigService {
     };
   }
 
+  // Avoid opening a connection here; connection is managed by MongooseModule.forRootAsync
   async testConnection(): Promise<void> {
     const uri = this.getMongoURI();
-    const options = this.getMongoOptions();
-    const user: string = options.user as string;
-    const pass: string = options.pass as string;
-
-    try {
-      await mongoose.connect(uri, {
-        user,
-        pass,
-      });
-
-      this.logger.debug('MongoDB connected successfully!');
-    } catch (error) {
-      this.logger.error(`MongoDB connection error: ${error.message}`);
-    }
+    this.logger.debug(`Mongo URI configured: ${uri ? 'provided' : 'missing'}`);
   }
 }

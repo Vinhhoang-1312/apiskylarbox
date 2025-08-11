@@ -15,9 +15,11 @@ export class TracerIdInterceptor implements NestInterceptor {
     const httpContext = context.switchToHttp();
     const request: Request = httpContext.getRequest();
     const response: Response = httpContext.getResponse();
-    const tracerId = request.headers['tracerId'] || uuidv4();
+    const incomingTracer = (request.headers['tracer'] as string | undefined) || undefined;
+    const tracerId = incomingTracer || uuidv4();
 
-    request.headers['tracer'] = tracerId;
+    // Normalize to a single lowercase header key: "tracer"
+    request.headers['tracer'] = tracerId as unknown as string;
     response.setHeader('tracer', tracerId);
 
     return next.handle();

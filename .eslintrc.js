@@ -34,6 +34,16 @@ module.exports = {
             position: 'before'
           },
           {
+            pattern: '@modules/**',
+            group: 'internal',
+            position: 'before'
+          },
+          {
+            pattern: '@shared/**',
+            group: 'internal',
+            position: 'before'
+          },
+          {
             pattern: '@common/**',
             group: 'internal',
             position: 'before'
@@ -44,22 +54,12 @@ module.exports = {
             position: 'before'
           },
           {
-            pattern: '@constants/**',
-            group: 'internal',
-            position: 'before'
-          },
-          {
-            pattern: '@modules/**',
-            group: 'internal',
-            position: 'after'
-          },
-          {
-            pattern: '@shared/**',
-            group: 'internal',
-            position: 'after'
-          },
-          {
             pattern: '@utils/**',
+            group: 'internal',
+            position: 'after'
+          },
+          {
+            pattern: '@constants/**',
             group: 'internal',
             position: 'after'
           },

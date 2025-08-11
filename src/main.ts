@@ -28,7 +28,8 @@ async function bootstrap() {
   app.use(express.json({ limit: '5mb' }));
   app.enableCors({
     origin: '*',
-    allowedHeaders: 'Content-Type, Authorization, TracerId',
+    // Align with interceptor and controllers: single lowercase header 'tracer'
+    allowedHeaders: 'Content-Type, Authorization, tracer',
   });
   setupSwagger(app);
 

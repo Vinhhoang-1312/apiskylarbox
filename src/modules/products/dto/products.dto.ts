@@ -1,115 +1,129 @@
-import { IsString, IsNumber, IsOptional, IsBoolean } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsNumber, IsBoolean, IsOptional, IsNotEmpty, IsEnum, IsMongoId } from 'class-validator';
+import { Type } from 'class-transformer';
+import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
+import { Types } from 'mongoose';
+
+export enum ProductType {
+    INDIVIDUAL = 'individual',
+    BOX = 'box',
+}
 
 export class CreateProductDto {
-    @ApiProperty({ description: 'Tên sản phẩm' })
+    @ApiProperty({ description: 'Product name' })
     @IsString()
+    @IsNotEmpty()
     name: string;
 
-    @ApiProperty({ description: 'Giá' })
+    @ApiProperty({ description: 'Product price' })
     @IsString()
+    @IsNotEmpty()
     price: string;
 
-    @ApiProperty({ description: 'Danh mục' })
+    @ApiProperty({ description: 'Product category' })
     @IsString()
+    @IsNotEmpty()
     category: string;
 
-    @ApiProperty({ description: 'Hình ảnh quà tặng' })
+    @ApiPropertyOptional({ description: 'Category ID reference' })
+    @IsMongoId()
     @IsOptional()
-    @IsString()
-    giftImage?: string;
+    categoryId?: string;
 
-    @ApiProperty({ description: 'Hình ảnh sản phẩm' })
-    @IsOptional()
+    @ApiProperty({ description: 'Gift image URL' })
     @IsString()
-    productImage?: string;
+    @IsNotEmpty()
+    giftImage: string;
 
-    @ApiProperty({ description: 'Icon quà tặng' })
-    @IsOptional()
+    @ApiProperty({ description: 'Product image URL' })
     @IsString()
-    giftIcon?: string;
+    @IsNotEmpty()
+    productImage: string;
 
-    @ApiProperty({ description: 'Mô tả' })
-    @IsOptional()
+    @ApiProperty({ description: 'Gift icon' })
     @IsString()
+    @IsNotEmpty()
+    giftIcon: string;
+
+    @ApiPropertyOptional({ description: 'Product description' })
+    @IsString()
+    @IsOptional()
     description?: string;
 
-    @ApiProperty({ description: 'Thứ tự sắp xếp' })
-    @IsOptional()
+    @ApiPropertyOptional({ description: 'Stock quantity', default: 0 })
     @IsNumber()
-    sort_order?: number;
-
-    @ApiProperty({ description: 'Trạng thái hoạt động' })
     @IsOptional()
+    @Type(() => Number)
+    stock?: number;
+
+    @ApiPropertyOptional({ description: 'Is product active', default: true })
     @IsBoolean()
-    is_active?: boolean;
+    @IsOptional()
+    isActive?: boolean;
+
+    @ApiPropertyOptional({ description: 'Is featured product', default: false })
+    @IsBoolean()
+    @IsOptional()
+    isFeatured?: boolean;
+
+    @ApiPropertyOptional({
+        description: 'Product type',
+        enum: ProductType,
+        default: ProductType.INDIVIDUAL,
+    })
+    @IsEnum(ProductType)
+    @IsOptional()
+    productType?: ProductType;
 }
 
-export class UpdateProductDto {
-    @ApiProperty({ description: 'Tên sản phẩm' })
-    @IsOptional()
-    @IsString()
-    name?: string;
+export class UpdateProductDto extends PartialType(CreateProductDto) { }
 
-    @ApiProperty({ description: 'Giá' })
-    @IsOptional()
-    @IsString()
-    price?: string;
-
-    @ApiProperty({ description: 'Danh mục' })
-    @IsOptional()
-    @IsString()
-    category?: string;
-
-    @ApiProperty({ description: 'Hình ảnh quà tặng' })
-    @IsOptional()
-    @IsString()
-    giftImage?: string;
-
-    @ApiProperty({ description: 'Hình ảnh sản phẩm' })
-    @IsOptional()
-    @IsString()
-    productImage?: string;
-
-    @ApiProperty({ description: 'Icon quà tặng' })
-    @IsOptional()
-    @IsString()
-    giftIcon?: string;
-
-    @ApiProperty({ description: 'Mô tả' })
-    @IsOptional()
-    @IsString()
-    description?: string;
-
-    @ApiProperty({ description: 'Thứ tự sắp xếp' })
-    @IsOptional()
+export class FilterProductDto {
+    @ApiPropertyOptional({ description: 'Page number', default: 1 })
     @IsNumber()
-    sort_order?: number;
-
-    @ApiProperty({ description: 'Trạng thái hoạt động' })
     @IsOptional()
-    @IsBoolean()
-    is_active?: boolean;
-}
-
-export class QueryProductDto {
-    @ApiProperty({ description: 'Trang', required: false })
-    @IsOptional()
-    @IsNumber()
+    @Type(() => Number)
     page?: number = 1;
 
-    @ApiProperty({ description: 'Số lượng mỗi trang', required: false })
-    @IsOptional()
+    @ApiPropertyOptional({ description: 'Items per page', default: 10 })
     @IsNumber()
+    @IsOptional()
+    @Type(() => Number)
     limit?: number = 10;
 
-    @ApiProperty({ description: 'Tìm kiếm theo tên', required: false })
-    @IsOptional()
+    @ApiPropertyOptional({ description: 'Search by product name' })
     @IsString()
+    @IsOptional()
     search?: string;
 
-    @ApiProperty({ description: 'Lọc theo danh mục', required: false })
-    @IsOptional()
+    @ApiPropertyOptional({ description: 'Filter by category' })
     @IsString()
+    @IsOptional()
     category?: string;
+
+    @ApiPropertyOptional({ description: 'Filter by category ID' })
+    @IsMongoId()
+    @IsOptional()
+    categoryId?: string;
+
+    @ApiPropertyOptional({ description: 'Filter by product type', enum: ProductType })
+    @IsEnum(ProductType)
+    @IsOptional()
+    productType?: ProductType;
+
+    @ApiPropertyOptional({ description: 'Filter by featured status' })
+    @IsBoolean()
+    @IsOptional()
+    @Type(() => Boolean)
+    isFeatured?: boolean;
+
+    @ApiPropertyOptional({ description: 'Filter by active status' })
+    @IsBoolean()
+    @IsOptional()
+    @Type(() => Boolean)
+    isActive?: boolean;
+
+    @ApiPropertyOptional({ description: 'Sort field', default: '-created_at' })
+    @IsString()
+    @IsOptional()
+    sort?: string = '-created_at';
 }

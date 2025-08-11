@@ -14,6 +14,6 @@ import { Categories, CategoriesSchema } from './schemas/categories.schema';
     ],
     controllers: [CategoriesController],
     providers: [CategoriesService, CategoriesRepository],
-    exports: [CategoriesService],
+    exports: [CategoriesService, MongooseModule],
 })
 export class CategoriesModule { }

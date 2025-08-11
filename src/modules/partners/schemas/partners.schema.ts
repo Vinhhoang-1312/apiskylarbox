@@ -1,13 +1,53 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 
 export type PartnersDocument = HydratedDocument<Partners>;
 
 @Schema({
-    collection: 'Partners',
+    _id: false,
+})
+export class Sponsorship {
+    @Prop({ type: String, required: true })
+    type: string;
+
+    @Prop({ type: Number, required: true })
+    amount: number;
+
+    @Prop({ type: String, required: true })
+    detail: string;
+}
+
+@Schema({
+    _id: false,
+})
+export class Representative {
+    @Prop({ type: String, required: true })
+    title: string;
+
+    @Prop({ type: String, required: true })
+    name: string;
+
+    @Prop({ type: String, required: true })
+    position: string;
+
+    @Prop({ type: String, default: '' })
+    dob: string;
+
+    @Prop({ type: String, default: '' })
+    facebook: string;
+
+    @Prop({ type: String, default: '' })
+    email: string;
+
+    @Prop({ type: String, default: '' })
+    phone: string;
+}
+
+@Schema({
+    collection: 'partners',
     timestamps: {
         createdAt: 'created_at',
-        updatedAt: 'last_update',
+        updatedAt: 'updated_at',
     },
 })
 export class Partners {
@@ -20,59 +60,26 @@ export class Partners {
     @Prop({ type: String, required: true })
     shortName: string;
 
-    @Prop({ type: String, default: '' })
+    @Prop({ type: String, required: true })
     website: string;
 
-    @Prop({ type: String, default: '' })
+    @Prop({ type: String, required: true })
     fanpage: string;
 
-    @Prop({
-        type: {
-            type: { type: String, default: '' },
-            amount: { type: Number, default: 0 },
-            detail: { type: String, default: '' },
-        },
-        default: {},
-    })
-    sponsorship: {
-        type: string;
-        amount: number;
-        detail: string;
-    };
+    @Prop({ type: Sponsorship, required: true })
+    sponsorship: Sponsorship;
 
-    @Prop({ type: String, default: '' })
+    @Prop({ type: String, required: true })
     package: string;
 
-    @Prop({ type: String, default: '' })
+    @Prop({ type: String, required: true })
     logo: string;
 
-    @Prop({
-        type: {
-            title: { type: String, default: '' },
-            name: { type: String, default: '' },
-            position: { type: String, default: '' },
-            dob: { type: String, default: '' },
-            facebook: { type: String, default: '' },
-            email: { type: String, default: '' },
-            phone: { type: String, default: '' },
-        },
-        default: {},
-    })
-    representative: {
-        title: string;
-        name: string;
-        position: string;
-        dob: string;
-        facebook: string;
-        email: string;
-        phone: string;
-    };
+    @Prop({ type: Representative, required: true })
+    representative: Representative;
 
     @Prop({ type: Boolean, default: true })
-    is_active: boolean;
-
-    @Prop({ type: Boolean, default: false })
-    is_delete: boolean;
+    isActive: boolean;
 }
 
 export const PartnersSchema = SchemaFactory.createForClass(Partners);

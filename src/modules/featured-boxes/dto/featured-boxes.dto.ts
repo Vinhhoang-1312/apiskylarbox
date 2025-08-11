@@ -1,110 +1,127 @@
-import { IsString, IsNumber, IsOptional, IsBoolean } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsNumber, IsBoolean, IsOptional, IsNotEmpty, IsArray } from 'class-validator';
+import { Type } from 'class-transformer';
+import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 
 export class CreateFeaturedBoxDto {
-    @ApiProperty({ description: 'Tên hộp quà' })
+    @ApiProperty({ description: 'Box name' })
     @IsString()
+    @IsNotEmpty()
     name: string;
 
-    @ApiProperty({ description: 'Mô tả' })
+    @ApiProperty({ description: 'Box description' })
     @IsString()
+    @IsNotEmpty()
     description: string;
 
-    @ApiProperty({ description: 'Giá' })
+    @ApiProperty({ description: 'Box price' })
     @IsString()
+    @IsNotEmpty()
     price: string;
 
-    @ApiProperty({ description: 'Màu sắc' })
-    @IsOptional()
+    @ApiProperty({ description: 'Box color (CSS class or color code)' })
     @IsString()
-    color?: string;
+    @IsNotEmpty()
+    color: string;
 
-    @ApiProperty({ description: 'Hình ảnh quà tặng' })
-    @IsOptional()
+    @ApiProperty({ description: 'Gift image URL' })
     @IsString()
-    giftImage?: string;
+    @IsNotEmpty()
+    giftImage: string;
 
-    @ApiProperty({ description: 'Hình ảnh sản phẩm' })
-    @IsOptional()
+    @ApiProperty({ description: 'Product image URL' })
     @IsString()
-    productImage?: string;
+    @IsNotEmpty()
+    productImage: string;
 
-    @ApiProperty({ description: 'Icon quà tặng' })
-    @IsOptional()
+    @ApiProperty({ description: 'Gift icon' })
     @IsString()
-    giftIcon?: string;
+    @IsNotEmpty()
+    giftIcon: string;
 
-    @ApiProperty({ description: 'Thứ tự sắp xếp' })
+    @ApiPropertyOptional({ description: 'URL slug' })
+    @IsString()
     @IsOptional()
+    slug?: string;
+
+    @ApiPropertyOptional({ description: 'Stock quantity', default: 0 })
     @IsNumber()
-    sort_order?: number;
-
-    @ApiProperty({ description: 'Trạng thái hoạt động' })
     @IsOptional()
+    @Type(() => Number)
+    stock?: number;
+
+    @ApiPropertyOptional({ description: 'Is box active', default: true })
     @IsBoolean()
-    is_active?: boolean;
+    @IsOptional()
+    isActive?: boolean;
+
+    @ApiPropertyOptional({ description: 'Is featured box', default: false })
+    @IsBoolean()
+    @IsOptional()
+    isFeatured?: boolean;
+
+    @ApiPropertyOptional({ description: 'Display order', default: 0 })
+    @IsNumber()
+    @IsOptional()
+    @Type(() => Number)
+    order?: number;
+
+    @ApiPropertyOptional({ description: 'Tags', type: [String] })
+    @IsArray()
+    @IsString({ each: true })
+    @IsOptional()
+    tags?: string[];
+
+    @ApiPropertyOptional({ description: 'Category' })
+    @IsString()
+    @IsOptional()
+    category?: string;
 }
 
-export class UpdateFeaturedBoxDto {
-    @ApiProperty({ description: 'Tên hộp quà' })
-    @IsOptional()
-    @IsString()
-    name?: string;
+export class UpdateFeaturedBoxDto extends PartialType(CreateFeaturedBoxDto) { }
 
-    @ApiProperty({ description: 'Mô tả' })
-    @IsOptional()
-    @IsString()
-    description?: string;
-
-    @ApiProperty({ description: 'Giá' })
-    @IsOptional()
-    @IsString()
-    price?: string;
-
-    @ApiProperty({ description: 'Màu sắc' })
-    @IsOptional()
-    @IsString()
-    color?: string;
-
-    @ApiProperty({ description: 'Hình ảnh quà tặng' })
-    @IsOptional()
-    @IsString()
-    giftImage?: string;
-
-    @ApiProperty({ description: 'Hình ảnh sản phẩm' })
-    @IsOptional()
-    @IsString()
-    productImage?: string;
-
-    @ApiProperty({ description: 'Icon quà tặng' })
-    @IsOptional()
-    @IsString()
-    giftIcon?: string;
-
-    @ApiProperty({ description: 'Thứ tự sắp xếp' })
-    @IsOptional()
+export class FilterFeaturedBoxDto {
+    @ApiPropertyOptional({ description: 'Page number', default: 1 })
     @IsNumber()
-    sort_order?: number;
-
-    @ApiProperty({ description: 'Trạng thái hoạt động' })
     @IsOptional()
-    @IsBoolean()
-    is_active?: boolean;
-}
-
-export class QueryFeaturedBoxDto {
-    @ApiProperty({ description: 'Trang', required: false })
-    @IsOptional()
-    @IsNumber()
+    @Type(() => Number)
     page?: number = 1;
 
-    @ApiProperty({ description: 'Số lượng mỗi trang', required: false })
-    @IsOptional()
+    @ApiPropertyOptional({ description: 'Items per page', default: 10 })
     @IsNumber()
+    @IsOptional()
+    @Type(() => Number)
     limit?: number = 10;
 
-    @ApiProperty({ description: 'Tìm kiếm theo tên', required: false })
-    @IsOptional()
+    @ApiPropertyOptional({ description: 'Search by name or description' })
     @IsString()
+    @IsOptional()
     search?: string;
+
+    @ApiPropertyOptional({ description: 'Filter by category' })
+    @IsString()
+    @IsOptional()
+    category?: string;
+
+    @ApiPropertyOptional({ description: 'Filter by featured status' })
+    @IsBoolean()
+    @IsOptional()
+    @Type(() => Boolean)
+    isFeatured?: boolean;
+
+    @ApiPropertyOptional({ description: 'Filter by active status' })
+    @IsBoolean()
+    @IsOptional()
+    @Type(() => Boolean)
+    isActive?: boolean;
+
+    @ApiPropertyOptional({ description: 'Filter by tags', type: [String] })
+    @IsArray()
+    @IsString({ each: true })
+    @IsOptional()
+    tags?: string[];
+
+    @ApiPropertyOptional({ description: 'Sort field', default: 'order' })
+    @IsString()
+    @IsOptional()
+    sort?: string = 'order';
 }

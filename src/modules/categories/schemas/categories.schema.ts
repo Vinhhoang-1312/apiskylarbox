@@ -1,36 +1,42 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 
 export type CategoriesDocument = HydratedDocument<Categories>;
 
 @Schema({
-    collection: 'Categories',
+    collection: 'categories',
     timestamps: {
         createdAt: 'created_at',
-        updatedAt: 'last_update',
+        updatedAt: 'updated_at',
     },
 })
 export class Categories {
-    @Prop({ type: String, required: true })
+    @Prop({ type: String, required: true, unique: true })
     name: string;
 
     @Prop({ type: String, default: '' })
-    description: string;
+    description?: string;
 
     @Prop({ type: String, default: '' })
-    icon: string;
+    image?: string;
 
-    @Prop({ type: String, default: '' })
-    color: string;
+    @Prop({ type: String, default: null })
+    parentId?: string;
 
     @Prop({ type: Number, default: 0 })
-    sort_order: number;
+    order?: number;
 
     @Prop({ type: Boolean, default: true })
-    is_active: boolean;
+    isActive: boolean;
 
-    @Prop({ type: Boolean, default: false })
-    is_delete: boolean;
+    @Prop({ type: String, default: '' })
+    slug?: string;
+
+    @Prop({ type: String, default: '' })
+    color?: string;
+
+    @Prop({ type: String, default: '' })
+    icon?: string;
 }
 
 export const CategoriesSchema = SchemaFactory.createForClass(Categories);

@@ -1,92 +1,166 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
+import { AppLogger } from '@shared/logger/logger.service';
+
+import { CreateProductDto, UpdateProductDto, FilterProductDto } from './dto/products.dto';
 import { ProductsRepository } from './repositories/products.repository';
-import { CreateProductDto, UpdateProductDto, QueryProductDto } from './dto/products.dto';
 import { ProductsDocument } from './schemas/products.schema';
 
 @Injectable()
 export class ProductsService {
+    private readonly logger = new AppLogger(this.constructor.name);
+
     constructor(private readonly productsRepository: ProductsRepository) { }
 
-    async create(createProductDto: CreateProductDto, tracerId?: string): Promise<ProductsDocument> {
+    async create(
+        createProductDto: CreateProductDto,
+        tracerId?: string,
+    ): Promise<ProductsDocument> {
+        this.logger.log('Creating new product', tracerId);
+
         return this.productsRepository.insert(
-            {
-                update: createProductDto,
-            },
+            { update: createProductDto },
             tracerId,
         );
     }
 
-    async findAll(query: QueryProductDto, tracerId?: string) {
-        const { page = 1, limit = 10, search, category } = query;
+    async findAll(
+        filterDto: FilterProductDto,
+        tracerId?: string,
+    ): Promise<{
+        list: ProductsDocument[];
+        total: number;
+        totalPages: number;
+        page: number;
+        limit: number;
+    }> {
+        this.logger.log('Finding all products', tracerId);
 
-        let filterQuery: any = { is_delete: false };
+        const query: any = {};
 
-        if (search) {
-            filterQuery.name = { $regex: search, $options: 'i' };
+        if (filterDto.search) {
+            query.$or = [
+                { name: { $regex: filterDto.search, $options: 'i' } },
+                { description: { $regex: filterDto.search, $options: 'i' } },
+                { category: { $regex: filterDto.search, $options: 'i' } },
+            ];
         }
 
-        if (category) {
-            filterQuery.category = category;
+        if (filterDto.category) {
+            query.category = filterDto.category;
+        }
+
+        if (filterDto.categoryId) {
+            query.categoryId = filterDto.categoryId;
+        }
+
+        if (filterDto.productType) {
+            query.productType = filterDto.productType;
+        }
+
+        if (typeof filterDto.isFeatured === 'boolean') {
+            query.isFeatured = filterDto.isFeatured;
+        }
+
+        if (typeof filterDto.isActive === 'boolean') {
+            query.isActive = filterDto.isActive;
         }
 
         return this.productsRepository.findWithPagination(
             {
-                query: filterQuery,
-                page,
-                limit,
+                query,
+                page: filterDto.page || 1,
+                limit: filterDto.limit || 10,
                 select: '',
-                sort: 'sort_order created_at',
+                sort: filterDto.sort || '-created_at',
+                populate: {
+                    path: 'categoryId',
+                    select: 'name description',
+                },
             },
             tracerId,
         );
     }
 
     async findOne(id: string, tracerId?: string): Promise<ProductsDocument> {
+        this.logger.log(`Finding product with ID: ${id}`, tracerId);
+
         const product = await this.productsRepository.findOne(
             {
-                query: { _id: id, is_delete: false },
+                query: { _id: id },
                 select: '',
             },
             tracerId,
         );
 
         if (!product) {
-            throw new NotFoundException('Product not found');
+            throw new NotFoundException(`Product with ID ${id} not found`);
         }
 
         return product;
     }
 
-    async update(id: string, updateProductDto: UpdateProductDto, tracerId?: string): Promise<ProductsDocument> {
-        const product = await this.productsRepository.updateOne(
+    async update(
+        id: string,
+        updateProductDto: UpdateProductDto,
+        tracerId?: string,
+    ): Promise<ProductsDocument> {
+        this.logger.log(`Updating product with ID: ${id}`, tracerId);
+
+        const updated = await this.productsRepository.updateOne(
             {
-                query: { _id: id, is_delete: false },
+                query: { _id: id },
                 update: updateProductDto,
             },
             tracerId,
         );
 
-        if (!product) {
-            throw new NotFoundException('Product not found');
+        if (!updated) {
+            throw new NotFoundException(`Product with ID ${id} not found`);
         }
 
-        return product;
+        return updated;
     }
 
-    async remove(id: string, tracerId?: string): Promise<ProductsDocument> {
-        const product = await this.productsRepository.updateOne(
-            {
-                query: { _id: id, is_delete: false },
-                update: { is_delete: true },
-            },
+    async remove(id: string, tracerId?: string): Promise<void> {
+        this.logger.log(`Removing product with ID: ${id}`, tracerId);
+
+        const product = await this.findOne(id, tracerId);
+
+        await this.productsRepository.delete(
+            { query: { _id: id } },
             tracerId,
         );
+    }
 
-        if (!product) {
-            throw new NotFoundException('Product not found');
-        }
+    async findByCategory(
+        category: string,
+        tracerId?: string,
+    ): Promise<ProductsDocument[]> {
+        this.logger.log(`Finding products by category: ${category}`, tracerId);
+        return this.productsRepository.findByCategory(category, tracerId);
+    }
 
-        return product;
+    async findByCategoryId(
+        categoryId: string,
+        tracerId?: string,
+    ): Promise<ProductsDocument[]> {
+        this.logger.log(`Finding products by category ID: ${categoryId}`, tracerId);
+        return this.productsRepository.findByCategoryId(categoryId, tracerId);
+    }
+
+    async findFeaturedProducts(
+        tracerId?: string,
+    ): Promise<ProductsDocument[]> {
+        this.logger.log('Finding featured products', tracerId);
+        return this.productsRepository.findFeaturedProducts(tracerId);
+    }
+
+    async findByProductType(
+        productType: string,
+        tracerId?: string,
+    ): Promise<ProductsDocument[]> {
+        this.logger.log(`Finding products by type: ${productType}`, tracerId);
+        return this.productsRepository.findByProductType(productType, tracerId);
     }
 }

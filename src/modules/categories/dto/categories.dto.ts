@@ -1,82 +1,88 @@
-import { IsString, IsNumber, IsOptional, IsBoolean } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsNumber, IsBoolean, IsOptional, IsNotEmpty } from 'class-validator';
+import { Type } from 'class-transformer';
+import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 
 export class CreateCategoryDto {
-    @ApiProperty({ description: 'Tên danh mục' })
+    @ApiProperty({ description: 'Category name' })
     @IsString()
+    @IsNotEmpty()
     name: string;
 
-    @ApiProperty({ description: 'Mô tả' })
-    @IsOptional()
+    @ApiPropertyOptional({ description: 'Category description' })
     @IsString()
+    @IsOptional()
     description?: string;
 
-    @ApiProperty({ description: 'Icon' })
-    @IsOptional()
+    @ApiPropertyOptional({ description: 'Category image URL' })
     @IsString()
-    icon?: string;
+    @IsOptional()
+    image?: string;
 
-    @ApiProperty({ description: 'Màu sắc' })
-    @IsOptional()
+    @ApiPropertyOptional({ description: 'Parent category ID' })
     @IsString()
+    @IsOptional()
+    parentId?: string;
+
+    @ApiPropertyOptional({ description: 'Display order', default: 0 })
+    @IsNumber()
+    @IsOptional()
+    @Type(() => Number)
+    order?: number;
+
+    @ApiPropertyOptional({ description: 'Is category active', default: true })
+    @IsBoolean()
+    @IsOptional()
+    isActive?: boolean;
+
+    @ApiPropertyOptional({ description: 'URL slug' })
+    @IsString()
+    @IsOptional()
+    slug?: string;
+
+    @ApiPropertyOptional({ description: 'Category color' })
+    @IsString()
+    @IsOptional()
     color?: string;
 
-    @ApiProperty({ description: 'Thứ tự sắp xếp' })
-    @IsOptional()
-    @IsNumber()
-    sort_order?: number;
-
-    @ApiProperty({ description: 'Trạng thái hoạt động' })
-    @IsOptional()
-    @IsBoolean()
-    is_active?: boolean;
-}
-
-export class UpdateCategoryDto {
-    @ApiProperty({ description: 'Tên danh mục' })
-    @IsOptional()
+    @ApiPropertyOptional({ description: 'Category icon' })
     @IsString()
-    name?: string;
-
-    @ApiProperty({ description: 'Mô tả' })
     @IsOptional()
-    @IsString()
-    description?: string;
-
-    @ApiProperty({ description: 'Icon' })
-    @IsOptional()
-    @IsString()
     icon?: string;
-
-    @ApiProperty({ description: 'Màu sắc' })
-    @IsOptional()
-    @IsString()
-    color?: string;
-
-    @ApiProperty({ description: 'Thứ tự sắp xếp' })
-    @IsOptional()
-    @IsNumber()
-    sort_order?: number;
-
-    @ApiProperty({ description: 'Trạng thái hoạt động' })
-    @IsOptional()
-    @IsBoolean()
-    is_active?: boolean;
 }
 
-export class QueryCategoryDto {
-    @ApiProperty({ description: 'Trang', required: false })
-    @IsOptional()
+export class UpdateCategoryDto extends PartialType(CreateCategoryDto) { }
+
+export class FilterCategoryDto {
+    @ApiPropertyOptional({ description: 'Page number', default: 1 })
     @IsNumber()
+    @IsOptional()
+    @Type(() => Number)
     page?: number = 1;
 
-    @ApiProperty({ description: 'Số lượng mỗi trang', required: false })
-    @IsOptional()
+    @ApiPropertyOptional({ description: 'Items per page', default: 10 })
     @IsNumber()
+    @IsOptional()
+    @Type(() => Number)
     limit?: number = 10;
 
-    @ApiProperty({ description: 'Tìm kiếm theo tên', required: false })
-    @IsOptional()
+    @ApiPropertyOptional({ description: 'Search by category name' })
     @IsString()
+    @IsOptional()
     search?: string;
+
+    @ApiPropertyOptional({ description: 'Filter by parent ID' })
+    @IsString()
+    @IsOptional()
+    parentId?: string;
+
+    @ApiPropertyOptional({ description: 'Filter by active status' })
+    @IsBoolean()
+    @IsOptional()
+    @Type(() => Boolean)
+    isActive?: boolean;
+
+    @ApiPropertyOptional({ description: 'Sort field', default: 'order' })
+    @IsString()
+    @IsOptional()
+    sort?: string = 'order';
 }

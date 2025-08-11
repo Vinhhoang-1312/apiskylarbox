@@ -1,167 +1,143 @@
-import { IsString, IsNumber, IsOptional, IsBoolean, ValidateNested } from 'class-validator';
+import { IsString, IsNumber, IsObject, IsBoolean, IsOptional, ValidateNested, IsNotEmpty } from 'class-validator';
 import { Type } from 'class-transformer';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 
 export class SponsorshipDto {
-    @ApiProperty({ description: 'Loại tài trợ' })
+    @ApiProperty({ description: 'Type of sponsorship' })
     @IsString()
+    @IsNotEmpty()
     type: string;
 
-    @ApiProperty({ description: 'Số tiền tài trợ' })
+    @ApiProperty({ description: 'Sponsorship amount' })
     @IsNumber()
+    @IsNotEmpty()
     amount: number;
 
-    @ApiProperty({ description: 'Chi tiết tài trợ' })
+    @ApiProperty({ description: 'Sponsorship detail' })
     @IsString()
+    @IsNotEmpty()
     detail: string;
 }
 
 export class RepresentativeDto {
-    @ApiProperty({ description: 'Danh xưng' })
+    @ApiProperty({ description: 'Title (Mr/Mrs/Ms)' })
     @IsString()
+    @IsNotEmpty()
     title: string;
 
-    @ApiProperty({ description: 'Tên đại diện' })
+    @ApiProperty({ description: 'Representative name' })
     @IsString()
+    @IsNotEmpty()
     name: string;
 
-    @ApiProperty({ description: 'Chức vụ' })
+    @ApiProperty({ description: 'Position' })
     @IsString()
+    @IsNotEmpty()
     position: string;
 
-    @ApiProperty({ description: 'Ngày sinh' })
+    @ApiPropertyOptional({ description: 'Date of birth' })
     @IsString()
-    dob: string;
+    @IsOptional()
+    dob?: string;
 
-    @ApiProperty({ description: 'Facebook' })
+    @ApiPropertyOptional({ description: 'Facebook profile' })
     @IsString()
-    facebook: string;
+    @IsOptional()
+    facebook?: string;
 
-    @ApiProperty({ description: 'Email' })
+    @ApiPropertyOptional({ description: 'Email address' })
     @IsString()
-    email: string;
+    @IsOptional()
+    email?: string;
 
-    @ApiProperty({ description: 'Số điện thoại' })
+    @ApiPropertyOptional({ description: 'Phone number' })
     @IsString()
-    phone: string;
+    @IsOptional()
+    phone?: string;
 }
 
 export class CreatePartnerDto {
-    @ApiProperty({ description: 'ID đối tác' })
+    @ApiProperty({ description: 'Partner ID' })
     @IsNumber()
+    @IsNotEmpty()
     id: number;
 
-    @ApiProperty({ description: 'Tên công ty' })
+    @ApiProperty({ description: 'Company name' })
     @IsString()
+    @IsNotEmpty()
     companyName: string;
 
-    @ApiProperty({ description: 'Tên viết tắt' })
+    @ApiProperty({ description: 'Short name' })
     @IsString()
+    @IsNotEmpty()
     shortName: string;
 
-    @ApiProperty({ description: 'Website' })
-    @IsOptional()
+    @ApiProperty({ description: 'Website URL' })
     @IsString()
-    website?: string;
+    @IsNotEmpty()
+    website: string;
 
-    @ApiProperty({ description: 'Fanpage' })
-    @IsOptional()
+    @ApiProperty({ description: 'Fanpage URL' })
     @IsString()
-    fanpage?: string;
+    @IsNotEmpty()
+    fanpage: string;
 
-    @ApiProperty({ description: 'Thông tin tài trợ' })
+    @ApiProperty({ type: SponsorshipDto, description: 'Sponsorship details' })
+    @IsObject()
     @ValidateNested()
     @Type(() => SponsorshipDto)
     sponsorship: SponsorshipDto;
 
-    @ApiProperty({ description: 'Gói tài trợ' })
-    @IsOptional()
+    @ApiProperty({ description: 'Package type (diamond/bronze)' })
     @IsString()
-    package?: string;
+    @IsNotEmpty()
+    package: string;
 
-    @ApiProperty({ description: 'Logo' })
-    @IsOptional()
+    @ApiProperty({ description: 'Logo URL' })
     @IsString()
-    logo?: string;
+    @IsNotEmpty()
+    logo: string;
 
-    @ApiProperty({ description: 'Thông tin đại diện' })
+    @ApiProperty({ type: RepresentativeDto, description: 'Representative details' })
+    @IsObject()
     @ValidateNested()
     @Type(() => RepresentativeDto)
     representative: RepresentativeDto;
 
-    @ApiProperty({ description: 'Trạng thái hoạt động' })
-    @IsOptional()
+    @ApiPropertyOptional({ description: 'Is partner active', default: true })
     @IsBoolean()
-    is_active?: boolean;
+    @IsOptional()
+    isActive?: boolean;
 }
 
-export class UpdatePartnerDto {
-    @ApiProperty({ description: 'Tên công ty' })
-    @IsOptional()
-    @IsString()
-    companyName?: string;
+export class UpdatePartnerDto extends PartialType(CreatePartnerDto) { }
 
-    @ApiProperty({ description: 'Tên viết tắt' })
-    @IsOptional()
-    @IsString()
-    shortName?: string;
-
-    @ApiProperty({ description: 'Website' })
-    @IsOptional()
-    @IsString()
-    website?: string;
-
-    @ApiProperty({ description: 'Fanpage' })
-    @IsOptional()
-    @IsString()
-    fanpage?: string;
-
-    @ApiProperty({ description: 'Thông tin tài trợ' })
-    @IsOptional()
-    @ValidateNested()
-    @Type(() => SponsorshipDto)
-    sponsorship?: SponsorshipDto;
-
-    @ApiProperty({ description: 'Gói tài trợ' })
-    @IsOptional()
-    @IsString()
-    package?: string;
-
-    @ApiProperty({ description: 'Logo' })
-    @IsOptional()
-    @IsString()
-    logo?: string;
-
-    @ApiProperty({ description: 'Thông tin đại diện' })
-    @IsOptional()
-    @ValidateNested()
-    @Type(() => RepresentativeDto)
-    representative?: RepresentativeDto;
-
-    @ApiProperty({ description: 'Trạng thái hoạt động' })
-    @IsOptional()
-    @IsBoolean()
-    is_active?: boolean;
-}
-
-export class QueryPartnerDto {
-    @ApiProperty({ description: 'Trang', required: false })
-    @IsOptional()
+export class FilterPartnerDto {
+    @ApiPropertyOptional({ description: 'Page number', default: 1 })
     @IsNumber()
+    @IsOptional()
+    @Type(() => Number)
     page?: number = 1;
 
-    @ApiProperty({ description: 'Số lượng mỗi trang', required: false })
-    @IsOptional()
+    @ApiPropertyOptional({ description: 'Items per page', default: 10 })
     @IsNumber()
+    @IsOptional()
+    @Type(() => Number)
     limit?: number = 10;
 
-    @ApiProperty({ description: 'Tìm kiếm theo tên', required: false })
-    @IsOptional()
+    @ApiPropertyOptional({ description: 'Search by company name' })
     @IsString()
+    @IsOptional()
     search?: string;
 
-    @ApiProperty({ description: 'Lọc theo gói', required: false })
-    @IsOptional()
+    @ApiPropertyOptional({ description: 'Filter by package type' })
     @IsString()
+    @IsOptional()
     package?: string;
+
+    @ApiPropertyOptional({ description: 'Filter by active status' })
+    @IsBoolean()
+    @IsOptional()
+    @Type(() => Boolean)
+    isActive?: boolean;
 }

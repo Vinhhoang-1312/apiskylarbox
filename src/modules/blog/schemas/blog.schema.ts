@@ -1,13 +1,13 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 
 export type BlogDocument = HydratedDocument<Blog>;
 
 @Schema({
-    collection: 'Blog',
+    collection: 'blog',
     timestamps: {
         createdAt: 'created_at',
-        updatedAt: 'last_update',
+        updatedAt: 'updated_at',
     },
 })
 export class Blog {
@@ -18,28 +18,46 @@ export class Blog {
     excerpt: string;
 
     @Prop({ type: String, required: true })
-    date: string;
-
-    @Prop({ type: String, default: '' })
     content: string;
 
     @Prop({ type: String, default: '' })
-    author: string;
+    slug?: string;
 
     @Prop({ type: String, default: '' })
-    image: string;
+    author?: string;
+
+    @Prop({ type: String, default: '' })
+    featuredImage?: string;
 
     @Prop({ type: [String], default: [] })
-    tags: string[];
+    tags?: string[];
 
-    @Prop({ type: Number, default: 0 })
-    sort_order: number;
+    @Prop({ type: String, default: '' })
+    category?: string;
+
+    @Prop({ type: Date, default: Date.now })
+    publishedDate?: Date;
 
     @Prop({ type: Boolean, default: true })
-    is_active: boolean;
+    isPublished: boolean;
 
     @Prop({ type: Boolean, default: false })
-    is_delete: boolean;
+    isFeatured?: boolean;
+
+    @Prop({ type: Number, default: 0 })
+    viewCount?: number;
+
+    @Prop({ type: Number, default: 0 })
+    likeCount?: number;
+
+    @Prop({ type: String, default: '' })
+    metaTitle?: string;
+
+    @Prop({ type: String, default: '' })
+    metaDescription?: string;
+
+    @Prop({ type: [String], default: [] })
+    metaKeywords?: string[];
 }
 
 export const BlogSchema = SchemaFactory.createForClass(Blog);

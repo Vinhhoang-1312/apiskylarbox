@@ -12,5 +12,5 @@ RUN npm run build
 
 EXPOSE 8080
 
-# CMD ["node", "dist/main"]
-CMD ["npm", "run", "start:dev"]
+# Default to production start. Use DEV command at build/run time if needed
+CMD ["npm", "run", "start"]
