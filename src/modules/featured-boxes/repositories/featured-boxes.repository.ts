@@ -91,3 +91,5 @@ export class FeaturedBoxesRepository extends BaseRepository<FeaturedBoxesDocumen
             .exec();
     }
 }
+
+

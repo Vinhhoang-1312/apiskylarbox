@@ -55,3 +55,4 @@ export class PartnersRepository extends BaseRepository<PartnersDocument> {
         return this.partnersModel.findOne({ id: partnerId }).exec();
     }
 }
+

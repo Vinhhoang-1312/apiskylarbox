@@ -17,3 +17,5 @@ import { FeaturedBoxes, FeaturedBoxesSchema } from './schemas/featured-boxes.sch
     exports: [FeaturedBoxesService],
 })
 export class FeaturedBoxesModule { }
+
+

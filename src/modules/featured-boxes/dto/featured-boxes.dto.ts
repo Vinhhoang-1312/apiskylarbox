@@ -125,3 +125,5 @@ export class FilterFeaturedBoxDto {
     @IsOptional()
     sort?: string = 'order';
 }
+
+

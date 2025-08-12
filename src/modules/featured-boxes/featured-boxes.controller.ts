@@ -164,3 +164,5 @@ export class FeaturedBoxesController {
         return this.featuredBoxesService.remove(id, tracerId);
     }
 }
+
+

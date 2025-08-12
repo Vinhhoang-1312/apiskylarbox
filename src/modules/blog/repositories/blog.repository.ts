@@ -141,3 +141,4 @@ export class BlogRepository extends BaseRepository<BlogDocument> {
             .exec();
     }
 }
+

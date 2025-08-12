@@ -141,3 +141,4 @@ export class FilterPartnerDto {
     @Type(() => Boolean)
     isActive?: boolean;
 }
+

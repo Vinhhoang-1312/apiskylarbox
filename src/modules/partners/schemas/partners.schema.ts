@@ -83,3 +83,4 @@ export class Partners {
 }
 
 export const PartnersSchema = SchemaFactory.createForClass(Partners);
+

@@ -61,3 +61,4 @@ export class Blog {
 }
 
 export const BlogSchema = SchemaFactory.createForClass(Blog);
+

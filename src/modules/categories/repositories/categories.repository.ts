@@ -75,3 +75,4 @@ export class CategoriesRepository extends BaseRepository<CategoriesDocument> {
             .exec();
     }
 }
+
