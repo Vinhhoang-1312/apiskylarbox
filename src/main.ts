@@ -44,7 +44,10 @@ async function bootstrap() {
     }),
   );
   app.useLogger(new AppLogger('EKATE-CORE'));
-  await app.listen(process.env.PORT ?? 3000);
+  const port = process.env.PORT ?? 3000;
+  await app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+  });
   if (module.hot) {
     module.hot.accept();
     module.hot.dispose(() => app.close());
