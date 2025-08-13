@@ -8,6 +8,12 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: MONGO_HOST
+        value: mongodb+srv://cluster0.ignmi9w.mongodb.net/skylarbox?retryWrites=true&w=majority
+      - key: MONGO_OPTIONS_USER
+        value: printapp
+      - key: MONGO_OPTIONS_PASS
+        value: printapppw
       # Add your DB or other env variables here
       # - key: DATABASE_URL
       #   value: mysql://user:pass@host:port/db
