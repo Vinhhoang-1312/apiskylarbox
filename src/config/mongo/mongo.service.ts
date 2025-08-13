@@ -12,15 +12,13 @@ export class MongoConfigService {
   constructor(private readonly config: ConfigService) { }
 
   getMongoURI(): string {
-    return this.config.get<string>('dbConfig.mongo.host');
+    // Directly return MongoDB Atlas URI for Render deployment
+    return "mongodb+srv://printapp:printapppw@cluster0.ignmi9w.mongodb.net/skylarbox?retryWrites=true&w=majority";
   }
 
   getMongoOptions(): Record<string, unknown> {
-    return {
-      user: this.config.get<string>('dbConfig.mongo.options.user'),
-      pass: this.config.get<string>('dbConfig.mongo.options.pass'),
-      authSource: this.config.get<string>('dbConfig.mongo.options.auth.authdb'),
-    };
+    // Return empty options since URI already has credentials
+    return {};
   }
 
   // Avoid opening a connection here; connection is managed by MongooseModule.forRootAsync
