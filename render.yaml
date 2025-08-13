@@ -16,8 +16,6 @@ services:
         value: printapppw
       - key: JWT_SECRET
         value: your-super-secret-jwt-key-for-skylarbox-app
-      - key: JWT_SECRET
-        value: your-super-secret-jwt-key-for-skylarbox-app
       # Add your DB or other env variables here
       # - key: DATABASE_URL
       #   value: mysql://user:pass@host:port/db

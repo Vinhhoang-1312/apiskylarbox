@@ -38,16 +38,16 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transformOptions: {},
-    }),
+    })
   );
+
   app.useLogger(new AppLogger('EKATE-CORE'));
-  const port = process.env.PORT ?? 3000;
+
+  const port = process.env.PORT || 3000;
   await app.listen(port, () => {
     console.log(`Server running on port ${port}`);
   });
+
   if (module.hot) {
     module.hot.accept();
     module.hot.dispose(() => app.close());
