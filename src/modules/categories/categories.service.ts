@@ -204,5 +204,73 @@ export class CategoriesService {
             .replace(/-+/g, '-')
             .trim();
     }
+
+    async seedDefaultCategories(tracerId?: string): Promise<any> {
+        this.logger.log('Seeding default categories', tracerId);
+
+        const defaultCategories = [
+            {
+                name: 'IndividualProduct',
+                description: 'Individual products category for standalone items',
+                slug: 'individual-product',
+                color: '#007bff',
+                icon: 'box',
+                isActive: true,
+                order: 1,
+            },
+        ];
+
+        const results = [];
+        for (const categoryData of defaultCategories) {
+            try {
+                // Check if category already exists
+                const existing = await this.categoriesRepository.findByName(
+                    categoryData.name,
+                    tracerId,
+                );
+
+                if (existing) {
+                    this.logger.log(
+                        `Category ${categoryData.name} already exists, skipping`,
+                        tracerId,
+                    );
+                    results.push({
+                        name: categoryData.name,
+                        status: 'already_exists',
+                        data: existing,
+                    });
+                } else {
+                    const newCategory = await this.categoriesRepository.insert(
+                        { update: categoryData },
+                        tracerId,
+                    );
+                    this.logger.log(
+                        `Category ${categoryData.name} created successfully`,
+                        tracerId,
+                    );
+                    results.push({
+                        name: categoryData.name,
+                        status: 'created',
+                        data: newCategory,
+                    });
+                }
+            } catch (error) {
+                this.logger.error(
+                    `Error creating category ${categoryData.name}: ${error.message}`,
+                    tracerId,
+                );
+                results.push({
+                    name: categoryData.name,
+                    status: 'error',
+                    error: error.message,
+                });
+            }
+        }
+
+        return {
+            message: 'Categories seeding completed',
+            results,
+        };
+    }
 }
 

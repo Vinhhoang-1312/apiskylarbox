@@ -152,5 +152,16 @@ export class CategoriesController {
     ) {
         return this.categoriesService.remove(id, tracerId);
     }
+
+    @Post('seed')
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({ summary: 'Seed default categories' })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'Categories seeded successfully',
+    })
+    async seedCategories(@Headers('tracer') tracerId?: string) {
+        return this.categoriesService.seedDefaultCategories(tracerId);
+    }
 }
 
